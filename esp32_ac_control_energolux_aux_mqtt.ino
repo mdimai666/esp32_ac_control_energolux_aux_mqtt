@@ -3,9 +3,10 @@
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include "AuxAC.h"
+#include "wifi_config.h"
 
-const char* ssid = "DD";
-const char* password = "J42ghaQY";
+const char* ssid = WIFI_SSID;
+const char* password = WIFI_PASSWORD;
 // Пароль для OTA: 1234
 
 // Назначение GPIO для ESP32-C3 Super Mini
