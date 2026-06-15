@@ -23,6 +23,7 @@ const char* mqttServer = "192.168.3.6";
 const int mqttPort = 1883;  // стандартный порт MQTT
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
+String mqttClientId = "ESP32C3_Energolux_AUX-";
 
 // MQTT Топики
 const char* topic_status_json = "/home/energolux/ac/status";
@@ -80,7 +81,9 @@ void loop() {
 void reconnectMQTT() {
   while (!mqttClient.connected()) {
     Serial.print("Подключение к MQTT...");
-    if (mqttClient.connect("ESP32C3_Energolux_AUX")) {
+    auto clientId = mqttClientId + String((uint32_t)ESP.getEfuseMac(), HEX);
+
+    if (mqttClient.connect(clientId.c_str())) {
       Serial.println("Успешно подключено!");
       // Подписываемся на топики управления
       mqttClient.subscribe(topic_cmd_power);
