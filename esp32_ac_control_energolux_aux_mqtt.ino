@@ -5,8 +5,6 @@
 #include "AuxAC.h"
 #include "wifi_config.h"
 
-const char* ssid = WIFI_SSID;
-const char* password = WIFI_PASSWORD;
 // Пароль для OTA: 1234
 
 // Назначение GPIO для ESP32-C3 Super Mini
@@ -41,7 +39,7 @@ void setup() {
   Serial.println("Booting...");
   pinMode(ledPin, OUTPUT);
 
-  setupWiFi(ssid, password);
+  setupWiFi(WIFI_SSID, WIFI_PASSWORD);
   setupOTA("esp32c3-ac-control-energolux-aux-mqtt", "1234");
 
   Serial.println("Ready");
@@ -53,6 +51,8 @@ void setup() {
 
   mqttClient.setServer(mqttServer, mqttPort);
   mqttClient.setCallback(mqttCallback);
+  mqttClient.setKeepAlive(60);
+  mqttClient.setSocketTimeout(30);
 }
 
 void loop() {
@@ -120,7 +120,9 @@ void mqttCallback(char* topic_ch, byte* payload, unsigned int length) {
     if (message == "ON" || message == "1")
       ac.setPower(true);
     else if (message == "OFF" || message == "0")
-      ac.setPower(true);
+      ac.setPower(false);
+    else if (message == "TOGGLE" || message == "2")
+      ac.setPower(!oldValues.power);
     else
       mqttClient.publish(topic_cmd_errors, "Unknown power value", true);
 
